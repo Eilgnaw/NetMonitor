@@ -80,19 +80,22 @@ void print_ifaddrmsg(struct nlmsghdr *nh)
     char eth[100];
     char addre[100];
     char cmdline[100];
-    printf("%s ", (nh->nlmsg_type==RTM_NEWADDR)?"NEWADDR":"DELADDR");  
-    if (tb[IFA_LABEL] != NULL) { 
+    printf("%s ", (nh->nlmsg_type==RTM_NEWADDR)?"NEWADDR":"DELADDR"); 
+    if (nh->nlmsg_type==RTM_NEWADDR) {//只要新的 ip
+        if (tb[IFA_LABEL] != NULL) { 
         sprintf(eth, "%s", RTA_DATA(tb[IFA_LABEL]));
-        if (tb[IFA_ADDRESS] != NULL) {  
-            inet_ntop(ifaddr->ifa_family, RTA_DATA(tb[IFA_ADDRESS]), tmp, sizeof(tmp));  
-            if(strcmp(eth, "eth0") == 0 ){//我只需要监听 eth0 网卡的就行了
-                sprintf(addre, "%s",tmp);
-                sprintf(cmdline, "/opt/sendmsg.sh %s",addre); 
-                system(cmdline);  
-                printf("%s ", tmp);
-            }
+            if (tb[IFA_ADDRESS] != NULL) {  
+                inet_ntop(ifaddr->ifa_family, RTA_DATA(tb[IFA_ADDRESS]), tmp, sizeof(tmp));  
+                if(strcmp(eth, "eth0") == 0 ){//我只需要监听 eth0 网卡的就行了
+                    sprintf(addre, "%s",tmp);
+                    sprintf(cmdline, "/opt/sendmsg.sh %s",addre); 
+                    system(cmdline);  
+                    printf("%s ", tmp);
+                }
+            }  
         }  
-    }  
+     } 
+    
     printf("\n");  
 }  
   
